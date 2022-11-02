@@ -57,14 +57,14 @@ def main():
   args = parser.parse_args()
 
   #labels = read_label_file(args.labels) if args.labels else {}
-  labels = read_label_file('cifar10_labels.txt')
+  labels = read_label_file('models/cifar10_labels.txt')
   
-  interpreter = make_interpreter('myModelLite.tflite');
+  interpreter = make_interpreter('models/myModelLite.tflite');
   #interpreter = make_interpreter(*args.model.split('@'))
   interpreter.allocate_tensors()
   size = common.input_size(interpreter)
   #image = Image.open(args.input).convert('RGB').resize(size, Image.ANTIALIAS)
-  imageA = Image.open('ferrari.jpg').convert('RGB').resize(size, Image.ANTIALIAS)
+  imageA = Image.open('images/car.png').convert('RGB').resize(size, Image.ANTIALIAS)
   start = time.perf_counter()
   common.set_input(interpreter, imageA)
   setup_time = time.perf_counter() - start
@@ -84,7 +84,7 @@ def main():
 
   
   
-  imageB = Image.open('green_parrot.jpg').convert('RGB').resize(size, Image.ANTIALIAS)
+  imageB = Image.open('images/green_parrot.png').convert('RGB').resize(size, Image.ANTIALIAS)
   start = time.perf_counter()
   common.set_input(interpreter, imageB)
   setup_time = time.perf_counter() - start
@@ -100,7 +100,7 @@ def main():
     print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
 
   
-  imageC = Image.open('chessboard32_A.jpg').convert('RGB').resize(size, Image.ANTIALIAS)
+  imageC = Image.open('images/chessboard-a.png').convert('RGB').resize(size, Image.ANTIALIAS)
   start = time.perf_counter()
   common.set_input(interpreter, imageC)
   setup_time = time.perf_counter() - start
@@ -115,14 +115,14 @@ def main():
   for c in classes:
     print('%s: %.5f' % (labels.get(c.id, c.id), c.score))	  
   
-  imageB = Image.open('green_parrot.jpg').convert('RGB').resize(size, Image.ANTIALIAS)
-  imageC = Image.open('chessboard32_A.jpg').convert('RGB').resize(size, Image.ANTIALIAS)
-  start = time.perf_counter()
-  for _ in range(args.count):
-   common.set_input(interpreter, imageB)
-   interpreter.invoke()
-   common.set_input(interpreter, imageC)
-   interpreter.invoke
+  # imageB = Image.open('green_parrot.jpg').convert('RGB').resize(size, Image.ANTIALIAS)
+  # imageC = Image.open('chessboard32_A.jpg').convert('RGB').resize(size, Image.ANTIALIAS)
+  # start = time.perf_counter()
+  # for _ in range(args.count):
+  #  common.set_input(interpreter, imageB)
+  #  interpreter.invoke()
+  #  common.set_input(interpreter, imageC)
+  #  interpreter.invoke
   
   loop_duration = time.perf_counter()-start 
   print('Loop Completed in '+('%.1fms'%(loop_duration*1000)))
