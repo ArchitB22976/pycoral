@@ -89,7 +89,7 @@ def main():
   for _ in range(args.count):
     start = time.perf_counter()
     p1.write(2, 1)
-    time.sleep(0.05)
+    time.sleep(0.5)
     p1.write(2, 0)
     interpreter.invoke()
     inference_time = time.perf_counter() - start
