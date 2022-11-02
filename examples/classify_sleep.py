@@ -87,11 +87,12 @@ def main():
   print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
   for _ in range(args.count):
-    start = time.perf_counter()
     p1.write(2, 1)
     time.sleep(0.05)
     p1.write(2, 0)
     time.sleep(0.05)
+    
+    start = time.perf_counter()
     interpreter.invoke()
     inference_time = time.perf_counter() - start
     classes = classify.get_classes(interpreter, args.top_k, args.threshold)
