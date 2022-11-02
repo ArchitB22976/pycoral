@@ -32,6 +32,7 @@ python3 examples/classify_image.py \
 import argparse
 import time
 
+import pigpio as pg
 import numpy as np
 from PIL import Image
 from pycoral.adapters import classify
@@ -41,6 +42,11 @@ from pycoral.utils.edgetpu import make_interpreter
 
 
 def main():
+  
+  p1 = pg.pi()
+  p1.set_mode(2, pg.OUTPUT) # GPIO 2 as output
+  p1.write(2, 0)
+  
   parser = argparse.ArgumentParser(
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument(
@@ -67,6 +73,10 @@ def main():
   args = parser.parse_args()
 
   labels = read_label_file(args.labels) if args.labels else {}
+
+  # First signal for notifying of interpreter making
+  p1.write(2, 1)
+  p1.write(2, 0)
 
   interpreter = make_interpreter(*args.model.split('@'))
   interpreter.allocate_tensors()
