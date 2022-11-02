@@ -77,6 +77,7 @@ def main():
 
   size = common.input_size(interpreter)
   image = Image.open(args.input).convert('RGB').resize(size, Image.ANTIALIAS)
+  common.set_input(interpreter, image) # trading for quant and normals
 
   # Image data must go through two transforms before running inference:
   # 1. normalization: f = (input - mean) / std
@@ -87,19 +88,19 @@ def main():
   # does not need any preprocessing (but in practice, even if the results are
   # very close to 1 and 0, it is probably okay to skip preprocessing for better
   # efficiency; we use 1e-5 below instead of absolute zero).
-  params = common.input_details(interpreter, 'quantization_parameters')
-  scale = params['scales']
-  zero_point = params['zero_points']
-  mean = args.input_mean
-  std = args.input_std
-  if abs(scale * std - 1) < 1e-5 and abs(mean - zero_point) < 1e-5:
-    # Input data does not require preprocessing.
-    common.set_input(interpreter, image)
-  else:
-    # Input data requires preprocessing
-    normalized_input = (np.asarray(image) - mean) / (std * scale) + zero_point
-    np.clip(normalized_input, 0, 255, out=normalized_input)
-    common.set_input(interpreter, normalized_input.astype(np.uint8))
+  # params = common.input_details(interpreter, 'quantization_parameters')
+  # scale = params['scales']
+  # zero_point = params['zero_points']
+  # mean = args.input_mean
+  # std = args.input_std
+  # if abs(scale * std - 1) < 1e-5 and abs(mean - zero_point) < 1e-5:
+  #   # Input data does not require preprocessing.
+  #   common.set_input(interpreter, image)
+  # else:
+  #   # Input data requires preprocessing
+  #   normalized_input = (np.asarray(image) - mean) / (std * scale) + zero_point
+  #   np.clip(normalized_input, 0, 255, out=normalized_input)
+  #   common.set_input(interpreter, normalized_input.astype(np.uint8))
 
   # Run inference
   print('----INFERENCE TIME----')
