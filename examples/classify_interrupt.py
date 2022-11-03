@@ -49,7 +49,7 @@ GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 GPIO.add_event_detect(
     BUTTON_PIN, GPIO.RISING, 
-    callback = button_callback, bouncetime = 50
+    callback = run_inference, bouncetime = 50
 )
 
 
