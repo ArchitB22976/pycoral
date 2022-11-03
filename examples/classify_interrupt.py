@@ -65,7 +65,11 @@ common.set_input(interpreter, image)
 print('----INFERENCE TIME----')
 print('Note: The first inference on Edge TPU is slow because it includes',
     'loading the model into Edge TPU memory.')
-run_inference()
+start = time.perf_counter()
+interpreter.invoke()
+inference_time = time.perf_counter() - start
+classes = classify.get_classes(interpreter, args.top_k, args.threshold)
+print('%.1fms' % (inference_time * 1000))
 print("---Waiting for input---")
 
 try:
