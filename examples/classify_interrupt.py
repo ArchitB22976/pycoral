@@ -76,7 +76,7 @@ print('Note: The first inference on Edge TPU is slow because it includes',
 run_inference()
 
 # Waiting for GPIO input
-calling = p_in.event_callback(26, pg.FALLING_EDGE, run_inference())
+calling = p_in.callback(26, pg.FALLING_EDGE, run_inference())
 
 print('----Waiting for input----')
 while True:
