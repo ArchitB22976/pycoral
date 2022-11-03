@@ -93,10 +93,7 @@ input = reader(pin, 26, args) # Initialise input GPIO (26)
 # Running the first inference
 print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
-input.run
-
-# Waiting for GPIO input
-calling = pin.callback(26, pg.EITHER_EDGE, run_inference())
+input.run()
 
 print('----Waiting for input----')
 try:
