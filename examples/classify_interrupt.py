@@ -44,6 +44,14 @@ def run_inference(channel):
     inference_time = time.perf_counter() - start
     classes = classify.get_classes(interpreter, args.top_k, args.threshold)
     print('%.1fms' % (inference_time * 1000))
+    
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+GPIO.add_event_detect(
+    BUTTON_PIN, GPIO.RISING, 
+    callback = button_callback, bouncetime = 50
+)
+
 
 labels = read_label_file(args.labels) if args.labels else {}
 
