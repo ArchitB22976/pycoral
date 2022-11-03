@@ -17,6 +17,7 @@ class reader:
       self.gpio = gpio
 
       pi.set_mode(gpio, pg.INPUT)
+      pi.set_pull_up_down(gpio, pg.PUD_UP)
       
       #add init
       labels = read_label_file(args.labels) if args.labels else {}
@@ -28,7 +29,7 @@ class reader:
       image = Image.open(args.input).convert('RGB').resize(size, Image.ANTIALIAS)
       common.set_input(self.interpreter, image) # trading for quant and normals
 
-      self._cb = self.pi.callback(gpio, pg.RISING_EDGE, self._cbf)
+      self._cb = self.pi.callback(gpio, pg.FALLING_EDGE, self._cbf)
 
    def run(self):
        start = time.perf_counter()
