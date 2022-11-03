@@ -75,12 +75,10 @@ print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
 run_inference()
 
-calling = p_in.callback(26, pg.FALLING_EDGE, run_inference())
-
 # Waiting for GPIO input
 print('----Waiting for input----')
 while True:
-    time.sleep(0.05)
+    calling = p_in.callback(26, pg.FALLING_EDGE, run_inference())
 # print('-------RESULTS--------')
 # for c in classes:
 #     print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
