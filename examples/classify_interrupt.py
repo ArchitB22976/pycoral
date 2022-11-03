@@ -76,9 +76,11 @@ print('Note: The first inference on Edge TPU is slow because it includes',
 run_inference()
 
 # Waiting for GPIO input
+calling = p_in.event_callback(26, pg.FALLING_EDGE, run_inference())
+
 print('----Waiting for input----')
 while True:
-    calling = p_in.callback(26, pg.FALLING_EDGE, run_inference())
+    time.sleep(0.03)
 # print('-------RESULTS--------')
 # for c in classes:
 #     print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
