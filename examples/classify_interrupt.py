@@ -16,10 +16,6 @@ class reader:
       self.pi = pi
       self.gpio = gpio
 
-    
-      self._high_tick = None
-      self._period = None
-
       pi.set_mode(gpio, pg.INPUT)
       
       #add init
@@ -32,7 +28,7 @@ class reader:
       image = Image.open(args.input).convert('RGB').resize(size, Image.ANTIALIAS)
       common.set_input(self.interpreter, image) # trading for quant and normals
 
-      self._cb = pi.callback(gpio, pg.RISING_EDGE, self._cbf)
+      self._cb = self.pi.callback(gpio, pg.RISING_EDGE, self._cbf)
 
    def run(self):
        start = time.perf_counter()
@@ -44,17 +40,11 @@ class reader:
    def _cbf(self, gpio, level, tick):
 
       if level == 1: # Rising edge.
-
-         if self._high_tick is not None:
-            t = pg.tickDiff(self._high_tick, tick)
-
             start = time.perf_counter()
             self.interpreter.invoke()
             inference_time = time.perf_counter() - start
             classes = classify.get_classes(self.interpreter, args.top_k, args.threshold)
             print('%.1fms' % (inference_time * 1000))
-
-         self._high_tick = tick
 
 pin = pg.pi()
 pin.set_mode(2, pg.OUTPUT) 
