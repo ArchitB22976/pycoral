@@ -25,8 +25,8 @@ class reader:
       #add init
       labels = read_label_file(args.labels) if args.labels else {}
 
-      interpreter = make_interpreter(*args.model.split('@'))
-      interpreter.allocate_tensors()
+      self.interpreter = make_interpreter(*args.model.split('@'))
+      self.interpreter.allocate_tensors()
 
       size = common.input_size(interpreter)
       image = Image.open(args.input).convert('RGB').resize(size, Image.ANTIALIAS)
