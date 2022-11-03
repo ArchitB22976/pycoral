@@ -56,8 +56,6 @@ class reader:
             print('%.1fms' % (inference_time * 1000))
 
          self._high_tick = tick
-  
-import read_pulse
 
 pin = pg.pi()
 pin.set_mode(2, pg.OUTPUT) 
@@ -89,14 +87,14 @@ parser.add_argument(
     help='STD value for input normalization')
 args = parser.parse_args()
 
-input = read_pulse.reader(pin, 26, args) # Initialise input GPIO (26)
+input = reader(pin, 26, args) # Initialise input GPIO (26)
 
         
 
 # Running the first inference
 print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
-input.run()
+input.run
 
 # Waiting for GPIO input
 calling = pin.callback(26, pg.EITHER_EDGE, run_inference())
