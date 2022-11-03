@@ -81,7 +81,7 @@ calling = pin.callback(26, pg.EITHER_EDGE, run_inference())
 print('----Waiting for input----')
 try:
     while True:
-        time.sleep(0.01)
+        time.sleep(60)
 except KeyboardInterrupt:
     print('-------RESULTS--------')
     for c in classes:
