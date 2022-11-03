@@ -96,13 +96,12 @@ print('Note: The first inference on Edge TPU is slow because it includes',
 input.run()
 
 print('----Waiting for input----')
-try:
-    while True:
-        time.sleep(60)
-except KeyboardInterrupt:
-    print('-------RESULTS--------')
-    for c in classes:
-        print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
+while True:
+    time.sleep(60)
+# except KeyboardInterrupt:
+#     print('-------RESULTS--------')
+#     for c in classes:
+#         print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
 
 
 
