@@ -10,17 +10,11 @@ from pycoral.utils.dataset import read_label_file
 from pycoral.utils.edgetpu import make_interpreter
 
 
-# Initialise output GPIO (2)
-p_out = pg.pi()
-p_out.set_mode(2, pg.OUTPUT) 
-p_out.write(2, 0)
 
-# Initialise input GPIO (26)
-p_in = pg.pi()
-p_in.set_mode(26, pg.INPUT)
-
-p_stop = pg.pi()
-p_stop.set_mode(19, pg.INPUT)
+pin = pg.pi()
+pin.set_mode(2, pg.OUTPUT) 
+pin.write(2, 0) # Initialise output GPIO (2)
+pin.set_mode(26, pg.INPUT) # Initialise input GPIO (26)
 
 # Parsing arguments from command line to run inference
 parser = argparse.ArgumentParser(
@@ -52,9 +46,9 @@ labels = read_label_file(args.labels) if args.labels else {}
 
 # LED/Oscilloscope response to indicate the start of making the interpreter
 for i in range(2):
-    p_out.write(2, 1)
+    pin.write(2, 1)
     time.sleep(0.05)
-    p_out.write(2, 0)
+    pin.write(2, 0)
 
 interpreter = make_interpreter(*args.model.split('@'))
 interpreter.allocate_tensors()
@@ -82,7 +76,7 @@ classes = classify.get_classes(interpreter, args.top_k, args.threshold)
 print('%.1fms' % (inference_time * 1000))
 
 # Waiting for GPIO input
-calling = p_in.callback(26, pg.FALLING_EDGE, run_inference())
+calling = pin.callback(26, pg.RISING_EDGE, run_inference())
 
 print('----Waiting for input----')
 try:
