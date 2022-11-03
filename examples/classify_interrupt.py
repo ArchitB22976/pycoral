@@ -75,7 +75,11 @@ def run_inference():
 # Running the first inference
 print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
-run_inference()
+start = time.perf_counter()
+interpreter.invoke()
+inference_time = time.perf_counter() - start
+classes = classify.get_classes(interpreter, args.top_k, args.threshold)
+print('%.1fms' % (inference_time * 1000))
 
 # Waiting for GPIO input
 calling = p_in.callback(26, pg.FALLING_EDGE, run_inference())
