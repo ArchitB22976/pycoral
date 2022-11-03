@@ -69,6 +69,8 @@ def run_inference():
     inference_time = time.perf_counter() - start
     classes = classify.get_classes(interpreter, args.top_k, args.threshold)
     print('%.1fms' % (inference_time * 1000))
+    
+        
 
 # Running the first inference
 print('Note: The first inference on Edge TPU is slow because it includes',
@@ -79,11 +81,13 @@ run_inference()
 calling = p_in.callback(26, pg.FALLING_EDGE, run_inference())
 
 print('----Waiting for input----')
-while True:
-    time.sleep(0.03)
-# print('-------RESULTS--------')
-# for c in classes:
-#     print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
+try:
+    while True:
+        time.sleep(0.01)
+except KeyboardInterrupt:
+    print('-------RESULTS--------')
+    for c in classes:
+        print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
 
 
 
