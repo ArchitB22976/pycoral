@@ -15,7 +15,6 @@ class reader:
       
       self.pi = pi
       self.gpio = gpio
-      self.pulses_per_rev = pulses_per_rev
 
     
       self._high_tick = None
