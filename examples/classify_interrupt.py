@@ -9,12 +9,59 @@ from pycoral.adapters import common
 from pycoral.utils.dataset import read_label_file
 from pycoral.utils.edgetpu import make_interpreter
 
+class reader:
+   
+   def __init__(self, pi, gpio, args):
+      
+      self.pi = pi
+      self.gpio = gpio
+      self.pulses_per_rev = pulses_per_rev
 
+    
+      self._high_tick = None
+      self._period = None
+
+      pi.set_mode(gpio, pg.INPUT)
+      
+      #add init
+      labels = read_label_file(args.labels) if args.labels else {}
+
+      interpreter = make_interpreter(*args.model.split('@'))
+      interpreter.allocate_tensors()
+
+      size = common.input_size(interpreter)
+      image = Image.open(args.input).convert('RGB').resize(size, Image.ANTIALIAS)
+      common.set_input(interpreter, image) # trading for quant and normals
+
+      self._cb = pi.callback(gpio, pg.RISING_EDGE, self._cbf)
+
+   def run(self):
+       start = time.perf_counter()
+       self.interpreter.invoke()
+       inference_time = time.perf_counter() - start
+       classes = classify.get_classes(self.interpreter, args.top_k, args.threshold)
+       print('%.1fms' % (inference_time * 1000))
+   
+   def _cbf(self, gpio, level, tick):
+
+      if level == 1: # Rising edge.
+
+         if self._high_tick is not None:
+            t = pg.tickDiff(self._high_tick, tick)
+
+            start = time.perf_counter()
+            self.interpreter.invoke()
+            inference_time = time.perf_counter() - start
+            classes = classify.get_classes(self.interpreter, args.top_k, args.threshold)
+            print('%.1fms' % (inference_time * 1000))
+
+         self._high_tick = tick
+  
+import read_pulse
 
 pin = pg.pi()
 pin.set_mode(2, pg.OUTPUT) 
 pin.write(2, 0) # Initialise output GPIO (2)
-pin.set_mode(26, pg.INPUT) # Initialise input GPIO (26)
 
 # Parsing arguments from command line to run inference
 parser = argparse.ArgumentParser(
@@ -42,38 +89,14 @@ parser.add_argument(
     help='STD value for input normalization')
 args = parser.parse_args()
 
-labels = read_label_file(args.labels) if args.labels else {}
+input = read_pulse.reader(pin, 26, args) # Initialise input GPIO (26)
 
-# LED/Oscilloscope response to indicate the start of making the interpreter
-for i in range(2):
-    pin.write(2, 1)
-    time.sleep(0.05)
-    pin.write(2, 0)
-
-interpreter = make_interpreter(*args.model.split('@'))
-interpreter.allocate_tensors()
-
-size = common.input_size(interpreter)
-image = Image.open(args.input).convert('RGB').resize(size, Image.ANTIALIAS)
-common.set_input(interpreter, image) # trading for quant and normals
-
-def run_inference():
-    start = time.perf_counter()
-    interpreter.invoke()
-    inference_time = time.perf_counter() - start
-    classes = classify.get_classes(interpreter, args.top_k, args.threshold)
-    print('%.1fms' % (inference_time * 1000))
-    
         
 
 # Running the first inference
 print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
-start = time.perf_counter()
-interpreter.invoke()
-inference_time = time.perf_counter() - start
-classes = classify.get_classes(interpreter, args.top_k, args.threshold)
-print('%.1fms' % (inference_time * 1000))
+input.run()
 
 # Waiting for GPIO input
 calling = pin.callback(26, pg.EITHER_EDGE, run_inference())
