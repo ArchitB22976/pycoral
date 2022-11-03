@@ -97,7 +97,7 @@ input.run()
 
 print('----Waiting for input----')
 while True:
-    time.sleep(60)
+    time.sleep(0.01)
 # except KeyboardInterrupt:
 #     print('-------RESULTS--------')
 #     for c in classes:
