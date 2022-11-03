@@ -76,7 +76,7 @@ classes = classify.get_classes(interpreter, args.top_k, args.threshold)
 print('%.1fms' % (inference_time * 1000))
 
 # Waiting for GPIO input
-calling = pin.callback(26, pg.RISING_EDGE, run_inference())
+calling = pin.callback(26, pg.EITHER_EDGE, run_inference())
 
 print('----Waiting for input----')
 try:
