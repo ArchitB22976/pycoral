@@ -28,9 +28,9 @@ class reader:
       self.interpreter = make_interpreter(*args.model.split('@'))
       self.interpreter.allocate_tensors()
 
-      size = common.input_size(interpreter)
+      size = common.input_size(self.interpreter)
       image = Image.open(args.input).convert('RGB').resize(size, Image.ANTIALIAS)
-      common.set_input(interpreter, image) # trading for quant and normals
+      common.set_input(self.interpreter, image) # trading for quant and normals
 
       self._cb = pi.callback(gpio, pg.RISING_EDGE, self._cbf)
 
